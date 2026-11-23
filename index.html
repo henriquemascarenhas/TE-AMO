@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cartinha &amp; Perfil</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: Arial, sans-serif;
+    background: #000000;
+    padding: 20px;
+    margin: 0;
+    min-height: 100vh;
+    text-align: center;
+    color: #ff4d6d;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Corações caindo no fundo */
+  .heart-bg {
+    position: fixed;
+    top: -10vh;
+    font-size: 24px;
+    color: #ff4d6d;
+    opacity: 0.6;
+    animation: fall linear infinite;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  @keyframes fall {
+    0% {
+      transform: translateY(0) rotate(0deg);
+      opacity: 0.8;
+    }
+    100% {
+      transform: translateY(105vh) rotate(360deg);
+      opacity: 0.2;
+    }
+  }
+
+  .heart-bg:nth-child(1) { left: 10%; animation-duration: 6s; animation-delay: 0s; }
+  .heart-bg:nth-child(2) { left: 25%; animation-duration: 8s; animation-delay: 2s; font-size: 30px; }
+  .heart-bg:nth-child(3) { left: 40%; animation-duration: 5s; animation-delay: 1s; }
+  .heart-bg:nth-child(4) { left: 55%; animation-duration: 7s; animation-delay: 3s; font-size: 35px; }
+  .heart-bg:nth-child(5) { left: 70%; animation-duration: 6s; animation-delay: 1.5s; }
+  .heart-bg:nth-child(6) { left: 85%; animation-duration: 9s; animation-delay: 0.5s; font-size: 28px; }
+  .heart-bg:nth-child(7) { left: 95%; animation-duration: 7s; animation-delay: 2.5s; }
+
+  /* Quadro temático com borda SVG */
+  .container {
+    max-width: 600px;
+    margin: 30px auto;
+    padding: 25px;
+    position: relative;
+    z-index: 2;
+    background: url('caminho/da/sua/imagem.jpg') no-repeat center center;
+    background-size: cover;
+    border: 24px solid transparent;
+    border-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="%23ff4d6d"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>') 30 round;
+    box-shadow: 0 0 20px rgba(255, 20, 20, 0.56);
+  }
+
+  /* Container ainda maior especificamente para a tela de fotos */
+  #view-fotos.container {
+    max-width: 760px;
+  }
+
+  /* Cartão claro para formulários simples (Login / Alterar) */
+  .container.light-card {
+    max-width: 420px;
+    background: #ffffff;
+    color: #222222;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+  }
+
+  .container.light-card .card-content {
+    background: transparent;
+    padding: 10px;
+  }
+
+  .card-content {
+    background: rgba(0, 0, 0, 0.65);
+    padding: 25px;
+    border-radius: 12px;
+  }
+
+  h2 {
+    color: rgba(255, 20, 20, 0.85);
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 26px;
+  }
+
+  h3.titulo-adicionar-foto {
+    color: #ff4d6d;
+    font-size: 18px;
+    margin-top: 28px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .container.light-card h2 {
+    color: #d62839;
+  }
+
+  label {
+    display: block;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #ffffff;
+  }
+
+  .container.light-card label {
+    color: #333333;
+    text-align: left;
+  }
+
+  input[type="text"],
+  input[type="file"] {
+    width: 90%;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 20, 20, 0.56);
+    background: rgba(255, 255, 255, 0.95);
+    font-size: 15px;
+    text-align: center;
+    color: #111;
+  }
+
+  .container.light-card input[type="text"],
+  .container.light-card input[type="file"] {
+    width: 100%;
+    text-align: left;
+    border: 1px solid #ccc;
+    background: #fff;
+  }
+
+  button,
+  .btn-link {
+    display: inline-block;
+    margin: 12px auto;
+    width: 75%;
+    text-align: center;
+    background: rgba(255, 20, 20, 0.72);
+    color: #ffffff;
+    padding: 12px 16px;
+    border-radius: 55px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  }
+
+  button:hover,
+  .btn-link:hover {
+    background: #ff4d6d;
+    transform: scale(1.02);
+  }
+
+  .container.light-card button,
+  .container.light-card .btn-link {
+    width: 100%;
+    border-radius: 8px;
+    background: #e63946;
+    color: #fff;
+  }
+
+  .container.light-card button:hover,
+  .container.light-card .btn-link:hover {
+    background: #d62839;
+  }
+
+  .btn-secondary {
+    background: #333333 !important;
+    color: #ffffff !important;
+  }
+
+  .btn-secondary:hover {
+    background: #555555 !important;
+  }
+
+  .msg {
+    font-weight: bold;
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin: 12px 0;
+    background: rgba(255, 77, 109, 0.2);
+    border: 1px solid #ff4d6d;
+    color: #ff8fa3;
+  }
+
+  .msg.ok {
+    background: rgba(46, 204, 113, 0.2);
+    border-color: #2ecc71;
+    color: #a3f7bf;
+  }
+
+  .container.light-card .msg {
+    background: #ffe6e6;
+    border-color: #d62839;
+    color: #d62839;
+  }
+
+  .container.light-card .msg.ok {
+    background: #e8fff0;
+    border-color: #2ecc71;
+    color: #1e8449;
+  }
+
+  #cad-preview,
+  #alt-preview,
+  #bemvindo-foto {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    margin: 15px auto;
+    border-radius: 10px;
+    border: 3px solid #ff4d6d;
+    box-shadow: 0 4px 10px #000;
+    display: none;
+  }
+
+  p.texto-carta {
+    font-family: 'Dancing Script', cursive;
+    font-size: 26px;
+    line-height: 1.5;
+    color: #ff6b81;
+    margin-bottom: 24px;
+    white-space: pre-line;
+    text-align: center;
+  }
+
+  /* Galeria de fotos maior e sem cortar as imagens */
+  .galeria-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 22px;
+    margin: 20px 0;
+  }
+
+  .foto-item {
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid #ff4d6d;
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.65);
+  }
+
+  .foto-item img {
+    width: 100%;
+    max-height: 460px;
+    height: auto;
+    object-fit: contain;
+    background: rgba(0, 0, 0, 0.45);
+    border-radius: 10px;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .foto-item p {
+    font-family: 'Dancing Script', cursive;
+    font-size: 24px;
+    color: #ff8fa3;
+    margin: 12px 0 6px;
+  }
+
+  .btn-remover-foto {
+    width: auto;
+    padding: 6px 14px;
+    font-size: 12px;
+    margin: 6px auto 0;
+    background: #333;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  .topbar-info {
+    font-size: 13px;
+    opacity: 0.8;
+    margin-bottom: 10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="heart-bg">❤️</div>
+<div class="heart-bg">💖</div>
+<div class="heart-bg">❤️</div>
+<div class="heart-bg">💕</div>
+<div class="heart-bg">❤️</div>
+<div class="heart-bg">💗</div>
+<div class="heart-bg">❤️</div>
+
+<!-- TELA 1: CADASTRO -->
+<section id="view-cadastro" class="container">
+  <div class="card-content">
+    <h2>Cadastro de usuário</h2>
+    <div id="cadastro-msg" class="msg hidden"></div>
+
+    <form id="form-cadastro">
+      <input type="text" id="cad-nome" placeholder="Nome completo" required>
+      <input type="text" id="cad-telefone" placeholder="Telefone" required>
+
+      <label for="cad-imagem">Foto de Perfil (obrigatória):</label>
+      <input type="file" id="cad-imagem" accept="image/*" required>
+      <img id="cad-preview" alt="Pré-visualização">
+
+      <button type="submit">Cadastrar</button>
+    </form>
+
+    <button type="button" class="btn-link btn-secondary" onclick="navegar('login')">
+      Já possui cadastro? Faça login
+    </button>
+  </div>
+</section>
+
+<!-- TELA 2: LOGIN -->
+<section id="view-login" class="container light-card hidden">
+  <div class="card-content">
+    <h2>Login do Cliente</h2>
+    <div id="login-msg" class="msg hidden"></div>
+
+    <form id="form-login">
+      <input type="text" id="login-telefone" placeholder="Telefone" required>
+      <input type="text" id="login-nome" placeholder="Nome" required>
+      <button type="submit">Entrar</button>
+    </form>
+
+    <button type="button" class="btn-link" onclick="navegar('cadastro')">
+      Voltar / Cadastro
+    </button>
+  </div>
+</section>
+
+<!-- TELA 3: BEM-VINDO -->
+<section id="view-bemvindo" class="container hidden">
+  <div class="card-content">
+    <div id="bemvindo-total" class="topbar-info hidden"></div>
+    <img id="bemvindo-foto" alt="Foto do Cliente">
+    <h2 id="bemvindo-titulo">Bem-vinda, amor!! ❤️</h2>
+
+    <button type="button" class="btn-link" onclick="navegar('alterar')">Atualizar informações</button>
+    <button type="button" class="btn-link" onclick="navegar('cartinha')">Ler cartinha</button>
+    <button type="button" class="btn-link btn-secondary" onclick="sair()">Sair</button>
+  </div>
+</section>
+
+<!-- TELA 4: ALTERAR INFORMAÇÕES -->
+<section id="view-alterar" class="container light-card hidden">
+  <div class="card-content">
+    <h2>Alterar Informações</h2>
+    <div id="alterar-msg" class="msg hidden"></div>
+
+    <form id="form-alterar">
+      <input type="text" id="alt-nome" placeholder="Nome completo" required>
+      <input type="text" id="alt-telefone" placeholder="Telefone" required>
+
+      <label for="alt-imagem">Foto de Perfil (obrigatória):</label>
+      <input type="file" id="alt-imagem" accept="image/*">
+      <img id="alt-preview" alt="Pré-visualização da foto">
+
+      <button type="submit">Atualizar</button>
+    </form>
+
+    <button type="button" class="btn-link" onclick="navegar('cartinha')">CONTINUAR</button>
+    <button type="button" class="btn-link btn-secondary" onclick="navegar('bemvindo')">Voltar</button>
+  </div>
+</section>
+
+<!-- TELA 5: CARTINHA -->
+<section id="view-cartinha" class="container hidden">
+  <div class="card-content">
+    <p class="texto-carta" id="texto-carta"></p>
+    <button type="button" class="btn-link btn-secondary" onclick="navegar('bemvindo')">Voltar ao início</button>
+    <a id="link-ver-fotos" href="#fotos" class="btn-link" onclick="event.preventDefault(); navegar('fotos')">Ver Fotos</a>
+  </div>
+</section>
+
+<!-- TELA 6: FOTOS -->
+<section id="view-fotos" class="container hidden">
+  <div class="card-content">
+    <h2>Nossas Fotos ❤️</h2>
+
+    <div id="galeria-fotos" class="galeria-grid"></div>
+
+    <h3 class="titulo-adicionar-foto">SENTIU FALTA DE ALGUMA FOTO? ADICIONE AGORA</h3>
+    <div id="fotos-msg" class="msg hidden"></div>
+
+    <form id="form-foto">
+      <input type="file" id="nova-foto" accept="image/*" required>
+      <input type="text" id="legenda-foto" placeholder="Escreva uma legenda fofa (opcional)">
+      <button type="submit">Adicionar Foto</button>
+    </form>
+
+    <button type="button" class="btn-link" onclick="navegar('cartinha')">Voltar para a cartinha</button>
+    <button type="button" class="btn-link btn-secondary" onclick="navegar('bemvindo')">Voltar ao início</button>
+  </div>
+</section>
+
+<script>
+  const STORAGE_CLIENTES = "app_clientes_v1";
+  const STORAGE_SESSAO = "app_cliente_sessao_id";
+  const STORAGE_FOTOS = "app_galeria_fotos_v1";
+
+  const CARTA_TEXTO = [
+    "Oii meu amor,",
+    "Como você ama minhas cartinhas decidi fazer uma aqui.",
+    "Fazia muito tempo que eu não fazia um site mas por você vale o esforço.",
+    "Meu amor quero te dizer o quanto você é especial pra mim e o quanto te amo.",
+    "Seu abraço me acalma nos momentos dificeis e ele é meu lugar favorito.",
+    "Eu amo seu carinho meu amor, ele me mostra o real significado de amor.",
+    "Eu amo a forma como você ri das minhas piadas bobas.",
+    "É muito bom passar os fins de semana com você e sua família.",
+    "E eu não vejo a hora de poder passar todos os dias com você.",
+    "Cada minuto ao seu lado é muito especial pra mim.",
+    "Sou muito feliz por te ter ao meu lado vida, você me faz tão bem.",
+    "Obrigado por ser essa pessoa tão incrível e paciente comigo.",
+    "Quero te agradecer por suportar todos os meus dramas chatos.",
+    "Eu amo seu jeitinho estressada amor, amo o jeito que você me olha.",
+    "Dia 4 fizemos três meses de namoro e seis meses desde nosso primeiro encontro.",
+    "E parece que te conheço a muito mais tempo, nossa conexão é incrível.",
+    "E não quero perder isso nunca meu amor.",
+    "Você trouxe tanta paz e alegria pra minha vida.",
+    "Espero realmente ser um bom namorado pra você meu amor.",
+    "Sei que sou uma pessoa dificil de lidar mas peço que tenha paciencia comigo.",
+    "Estou dando o meu máximo pra ser o melhor pra você .",
+    "Cada detalhe do modo que você me trata me dá a certeza de que eu te amo e você também me ama.",
+    "Espero conseguir fazer você se sentir tão amada quanto você me faz.",
+    "Ainda temos muitos lugares para conhecer e momentos para viver.",
+    "Você é o presente mais bonito que Deus me deu e a minha melhor escolha.",
+    "Estou sempre aqui para o que precisar meu amor.",
+    "Te amo mais do que as palavras conseguem mostrar nesta tela.",
+    "Te amo infinitamente, minha princesa!! ❤️"
+  ].join("\n");
+
+  document.getElementById("texto-carta").textContent = CARTA_TEXTO;
+
+  function obterClientes() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_CLIENTES)) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  function guardarClientes(lista) {
+    localStorage.setItem(STORAGE_CLIENTES, JSON.stringify(lista));
+  }
+
+  function obterClienteAtual() {
+    const id = localStorage.getItem(STORAGE_SESSAO);
+    if (!id) return null;
+    return obterClientes().find(c => String(c.id) === String(id)) || null;
+  }
+
+  function obterFotos() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_FOTOS)) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  function guardarFotos(lista) {
+    localStorage.setItem(STORAGE_FOTOS, JSON.stringify(lista));
+  }
+
+  function mostrarMsg(elId, texto, sucesso = false) {
+    const el = document.getElementById(elId);
+    el.textContent = texto;
+    el.classList.remove("hidden", "ok");
+    if (sucesso) el.classList.add("ok");
+  }
+
+  function esconderMsg(elId) {
+    const el = document.getElementById(elId);
+    el.textContent = "";
+    el.classList.add("hidden");
+  }
+
+  // Comprime e redimensiona a imagem via Canvas antes de salvar no localStorage
+  function lerArquivoComprimido(file, maxLargura = 800, qualidade = 0.72) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error("Falha ao ler a imagem."));
+      reader.onload = () => {
+        const img = new Image();
+        img.onerror = () => reject(new Error("Arquivo de imagem inválido."));
+        img.onload = () => {
+          let { width, height } = img;
+          if (width > maxLargura) {
+            height = Math.round((height * maxLargura) / width);
+            width = maxLargura;
+          }
+
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+
+          resolve(canvas.toDataURL("image/jpeg", qualidade));
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function navegar(rota) {
+    const rotasProtegidas = ["bemvindo", "alterar", "cartinha", "fotos"];
+    const cliente = obterClienteAtual();
+
+    if (rotasProtegidas.includes(rota) && !cliente) {
+      rota = "login";
+    }
+
+    document.querySelectorAll("section.container").forEach(sec => sec.classList.add("hidden"));
+    esconderMsg("cadastro-msg");
+    esconderMsg("login-msg");
+    esconderMsg("alterar-msg");
+    esconderMsg("fotos-msg");
+
+    if (rota === "cadastro") {
+      document.getElementById("view-cadastro").classList.remove("hidden");
+    } else if (rota === "login") {
+      document.getElementById("view-login").classList.remove("hidden");
+    } else if (rota === "bemvindo") {
+      preencherBemvindo(cliente);
+      document.getElementById("view-bemvindo").classList.remove("hidden");
+    } else if (rota === "alterar") {
+      preencherAlterar(cliente);
+      document.getElementById("view-alterar").classList.remove("hidden");
+    } else if (rota === "cartinha") {
+      const linkFotos = document.getElementById("link-ver-fotos");
+      if (cliente && linkFotos) {
+        linkFotos.href = `#fotos?id=${cliente.id}`;
+      }
+      document.getElementById("view-cartinha").classList.remove("hidden");
+    } else if (rota === "fotos") {
+      renderizarFotos();
+      document.getElementById("view-fotos").classList.remove("hidden");
+    }
+  }
+
+  function preencherBemvindo(cliente) {
+    const params = new URLSearchParams(window.location.search);
+    const total = parseFloat(params.get("total"));
+    const totalEl = document.getElementById("bemvindo-total");
+
+    if (!Number.isNaN(total) && total > 0) {
+      totalEl.textContent = `Total: R$ ${total.toFixed(2)}`;
+      totalEl.classList.remove("hidden");
+    } else {
+      totalEl.classList.add("hidden");
+    }
+
+    const fotoEl = document.getElementById("bemvindo-foto");
+    if (cliente.imagem) {
+      fotoEl.src = cliente.imagem;
+      fotoEl.style.display = "block";
+    } else {
+      fotoEl.style.display = "none";
+    }
+
+    document.getElementById("bemvindo-titulo").textContent = `Bem-vinda, ${cliente.nome}!! ❤️`;
+  }
+
+  function preencherAlterar(cliente) {
+    document.getElementById("alt-nome").value = cliente.nome || "";
+    document.getElementById("alt-telefone").value = cliente.telefone || "";
+    document.getElementById("alt-imagem").value = "";
+
+    const preview = document.getElementById("alt-preview");
+    if (cliente.imagem) {
+      preview.src = cliente.imagem;
+      preview.style.display = "block";
+    } else {
+      preview.style.display = "none";
+    }
+  }
+
+  function renderizarFotos() {
+    const galeria = document.getElementById("galeria-fotos");
+    const fotos = obterFotos();
+    galeria.innerHTML = "";
+
+    if (fotos.length === 0) {
+      galeria.innerHTML = "<p>oii ❤️ Ainda não há fotos adicionadas.</p>";
+      return;
+    }
+
+    fotos.forEach(foto => {
+      const card = document.createElement("div");
+      card.className = "foto-item";
+
+      const img = document.createElement("img");
+      img.src = foto.src;
+      img.alt = foto.legenda || "Nossa foto";
+      card.appendChild(img);
+
+      if (foto.legenda) {
+        const p = document.createElement("p");
+        p.textContent = foto.legenda;
+        card.appendChild(p);
+      }
+
+      const btnRemover = document.createElement("button");
+      btnRemover.type = "button";
+      btnRemover.className = "btn-remover-foto";
+      btnRemover.textContent = "Remover";
+      btnRemover.onclick = () => removerFoto(foto.id);
+      card.appendChild(btnRemover);
+
+      galeria.appendChild(card);
+    });
+  }
+
+  function removerFoto(id) {
+    const atualizadas = obterFotos().filter(f => f.id !== id);
+    guardarFotos(atualizadas);
+    renderizarFotos();
+  }
+
+  function sair() {
+    localStorage.removeItem(STORAGE_SESSAO);
+    navegar("login");
+  }
+
+  // Pré-visualização no cadastro
+  document.getElementById("cad-imagem").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    const preview = document.getElementById("cad-preview");
+    if (file) {
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = "block";
+    }
+  });
+
+  // Pré-visualização ao alterar
+  document.getElementById("alt-imagem").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    const preview = document.getElementById("alt-preview");
+    if (file) {
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = "block";
+    }
+  });
+
+  // Submit Cadastro
+  document.getElementById("form-cadastro").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const nome = document.getElementById("cad-nome").value.trim();
+    const telefone = document.getElementById("cad-telefone").value.trim();
+    const file = document.getElementById("cad-imagem").files[0];
+
+    if (!nome || !telefone) {
+      mostrarMsg("cadastro-msg", "⚠️ Preencha todos os campos obrigatórios.");
+      return;
+    }
+    if (!file) {
+      mostrarMsg("cadastro-msg", "⚠️ A foto de perfil é obrigatória!");
+      return;
+    }
+
+    try {
+      const imagemBase64 = await lerArquivoComprimido(file, 500, 0.75);
+      const clientes = obterClientes();
+      const novoCliente = {
+        id: Date.now(),
+        nome,
+        telefone,
+        imagem: imagemBase64,
+        dataCadastro: new Date().toISOString()
+      };
+      clientes.push(novoCliente);
+      guardarClientes(clientes);
+      localStorage.setItem(STORAGE_SESSAO, String(novoCliente.id));
+      e.target.reset();
+      document.getElementById("cad-preview").style.display = "none";
+      navegar("bemvindo");
+    } catch (err) {
+      mostrarMsg("cadastro-msg", `⚠️ ${err.message}`);
+    }
+  });
+
+  // Submit Login
+  document.getElementById("form-login").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const telefone = document.getElementById("login-telefone").value.trim();
+    const nome = document.getElementById("login-nome").value.trim();
+
+    if (!telefone || !nome) {
+      mostrarMsg("login-msg", "⚠️ Preencha telefone e nome.");
+      return;
+    }
+
+    const clientes = obterClientes();
+    const encontrado = clientes.find(
+      c => c.telefone.trim() === telefone && c.nome.trim().toLowerCase() === nome.toLowerCase()
+    );
+
+    if (encontrado) {
+      localStorage.setItem(STORAGE_SESSAO, String(encontrado.id));
+      e.target.reset();
+      navegar("bemvindo");
+    } else {
+      mostrarMsg("login-msg", "você não é minha namorada tá fazendo o que aqui piranha??");
+    }
+  });
+
+  // Submit Alterar Informações
+  document.getElementById("form-alterar").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const cliente = obterClienteAtual();
+    if (!cliente) {
+      navegar("login");
+      return;
+    }
+
+    const nome = document.getElementById("alt-nome").value.trim();
+    const telefone = document.getElementById("alt-telefone").value.trim();
+    const file = document.getElementById("alt-imagem").files[0];
+
+    if (!nome || !telefone) {
+      mostrarMsg("alterar-msg", "⚠️ Preencha Nome e Telefone.");
+      return;
+    }
+
+    let imagemFinal = cliente.imagem;
+    if (file) {
+      try {
+        imagemFinal = await lerArquivoComprimido(file, 500, 0.75);
+      } catch (err) {
+        mostrarMsg("alterar-msg", `⚠️ Falha ao enviar a nova imagem: ${err.message}`);
+        return;
+      }
+    }
+
+    if (!imagemFinal) {
+      mostrarMsg("alterar-msg", "⚠️ Enviar uma foto de perfil é obrigatório!");
+      return;
+    }
+
+    try {
+      const clientes = obterClientes().map(c => {
+        if (String(c.id) === String(cliente.id)) {
+          return { ...c, nome, telefone, imagem: imagemFinal };
+        }
+        return c;
+      });
+
+      guardarClientes(clientes);
+      mostrarMsg("alterar-msg", "✅ Informações atualizadas com sucesso!", true);
+    } catch (err) {
+      mostrarMsg("alterar-msg", "⚠️ Espaço cheio no navegador! Remova algumas fotos da galeria primeiro.");
+    }
+  });
+
+  // Submit Adicionar Foto na Galeria
+  document.getElementById("form-foto").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const file = document.getElementById("nova-foto").files[0];
+    const legenda = document.getElementById("legenda-foto").value.trim();
+
+    if (!file) {
+      mostrarMsg("fotos-msg", "⚠️ Selecione uma foto primeiro.");
+      return;
+    }
+
+    try {
+      const srcBase64 = await lerArquivoComprimido(file, 800, 0.72);
+      const fotos = obterFotos();
+      fotos.push({
+        id: Date.now(),
+        src: srcBase64,
+        legenda
+      });
+      guardarFotos(fotos);
+      e.target.reset();
+      renderizarFotos();
+      mostrarMsg("fotos-msg", "✅ Foto adicionada com sucesso!", true);
+    } catch (err) {
+      if (err && (err.name === "QuotaExceededError" || String(err.message).includes("quota"))) {
+        mostrarMsg("fotos-msg", "⚠️ Espaço cheio no navegador! Remova alguma foto antiga para adicionar outra.");
+      } else {
+        mostrarMsg("fotos-msg", `⚠️ Erro ao carregar foto: ${err.message}`);
+      }
+    }
+  });
+
+  // Inicialização
+  window.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(window.location.search);
+    const idParam = params.get("id");
+    if (idParam) {
+      const existe = obterClientes().some(c => String(c.id) === String(idParam));
+      if (existe) {
+        localStorage.setItem(STORAGE_SESSAO, String(idParam));
+        navegar("bemvindo");
+        return;
+      }
+    }
+    navegar("cadastro");
+  });
+</script>
+</body>
+</html>
